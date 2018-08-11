@@ -8,11 +8,12 @@
 
 #import "QiButton_UIControlEventsViewController.h"
 
-static NSUInteger kDisplaceStep = 0;    //! 偏移位数
-static long long const kDisplacementBase = 0x01;   //! 偏移基数
+static NSUInteger kDisplaceStep = 0;    //!< 偏移位数
+static long long const kDisplacementBase = 0x01;   //!< 偏移基数
 
-@implementation QiButton_UIControlEventsViewController{
-    NSDictionary *_controlEventDictionary;  //! UIControlEvents 枚举字典
+@implementation QiButton_UIControlEventsViewController {
+    
+    NSDictionary *_controlEventDictionary;  //!< UIControlEvents 枚举字典
 }
 
 - (void)viewDidLoad {
@@ -69,41 +70,47 @@ static long long const kDisplacementBase = 0x01;   //! 偏移基数
         * 其中还有别的内容像 UITextField 像 UISlider 中的一些事件处理
      */
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    
-    CGFloat btnW = CGRectGetWidth(self.view.frame);
-    CGFloat btnH = CGRectGetHeight(self.view.frame) / 6;
+    CGFloat screenH = [UIScreen mainScreen].bounds.size.height;
+    CGFloat screenW = [UIScreen mainScreen].bounds.size.width;
+    if (screenH == 812.0 && screenW == 375.0) {
+        screenH -= 122.0;
+    }else {
+        screenH -= 44.0;
+    }
     CGFloat btnTopMargin = 20.0;
+    CGFloat btnW = [UIScreen mainScreen].bounds.size.width;
+    CGFloat btnH = (screenH - (btnTopMargin * 5)) / 5;
     
-    UIButton *normalBtn = [[UIButton alloc]initWithFrame:CGRectMake(.0, btnTopMargin, btnW, btnH)];
+    UIButton *normalBtn = [[UIButton alloc] initWithFrame:CGRectMake(.0, btnTopMargin, btnW, btnH)];
     [self.view addSubview:normalBtn];
     [normalBtn setTitle:@"normalButton" forState:UIControlStateNormal];
     normalBtn.backgroundColor = [UIColor lightGrayColor];
     [normalBtn addTarget:self action:@selector(normalButtonClicked:) forControlEvents:UIControlEventTouchDown];
     [normalBtn addTarget:self action:@selector(normalButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     
-    UIButton *targetNilBtn = [[UIButton alloc]initWithFrame:CGRectMake(.0, (btnTopMargin * 2 + btnH), btnW, btnH)];
+    UIButton *targetNilBtn = [[UIButton alloc] initWithFrame:CGRectMake(.0, (btnTopMargin * 2 + btnH), btnW, btnH)];
     [self.view addSubview:targetNilBtn];
     [targetNilBtn setTitle:@"targetNilButton" forState:UIControlStateNormal];
     targetNilBtn.backgroundColor = [UIColor grayColor];
     [targetNilBtn addTarget:nil action:@selector(targetNilButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [targetNilBtn addTarget:nil action:@selector(targetNilButtonClicked:) forControlEvents:UIControlEventTouchDown];
     
-    UIButton *selectorNullBtn = [[UIButton alloc]initWithFrame:CGRectMake(.0, (btnTopMargin * 3 + btnH * 2), btnW, btnH)];
+    UIButton *selectorNullBtn = [[UIButton alloc] initWithFrame:CGRectMake(.0, (btnTopMargin * 3 + btnH * 2), btnW, btnH)];
     [self.view addSubview:selectorNullBtn];
     [selectorNullBtn setTitle:@"null Selector Button" forState:UIControlStateNormal];
     selectorNullBtn.backgroundColor = [UIColor darkGrayColor];
     [selectorNullBtn addTarget:self action:@selector(null) forControlEvents:UIControlEventTouchUpInside];
     
-    UIButton *allEventsBtn = [[UIButton alloc]initWithFrame:CGRectMake(.0, (btnTopMargin * 4 + btnH * 3), btnW, btnH)];
+    UIButton *allEventsBtn = [[UIButton alloc] initWithFrame:CGRectMake(.0, (btnTopMargin * 4 + btnH * 3), btnW, btnH)];
     [self.view addSubview:allEventsBtn];
     [allEventsBtn setTitle:@"allEventsButton" forState:UIControlStateNormal];
-    allEventsBtn.backgroundColor = [[UIColor darkTextColor]colorWithAlphaComponent:0.6];
+    allEventsBtn.backgroundColor = [[UIColor darkTextColor] colorWithAlphaComponent:0.6];
     [allEventsBtn addTarget:self action:@selector(allEventButtonClicked:) forControlEvents:UIControlEventAllEvents];
     
-    UIButton *resetBtn = [[UIButton alloc]initWithFrame:CGRectMake(.0, (btnTopMargin * 5 + btnH * 4), btnW, btnH)];
+    UIButton *resetBtn = [[UIButton alloc] initWithFrame:CGRectMake(.0, (btnTopMargin * 5 + btnH * 4), btnW, btnH)];
     [self.view addSubview:resetBtn];
     [resetBtn setTitle:@"复位" forState:UIControlStateNormal];
-    resetBtn.backgroundColor = [[UIColor darkTextColor]colorWithAlphaComponent:0.8];
+    resetBtn.backgroundColor = [[UIColor darkTextColor] colorWithAlphaComponent:0.8];
     [resetBtn addTarget:self action:@selector(resetButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     
 }
@@ -267,6 +274,10 @@ static long long const kDisplacementBase = 0x01;   //! 偏移基数
             所有的事件 包括系统事件
 #endif
     /**
+     * 只要是加了UIControlEventTouchDown像那么相应的方式是会首先要调用的
+     * 其余的像UIControlEventTouchUpInside对应的方法可能会调用
+     * 像UIControlEventTouchDragInside 则可能在手指在按钮中拖动的时候 会调用对应的方法
+     * 对于UISlider经常用到的有依次添加 UIControlTouchDown UIControlEventValueChanged UIControlEventTouchUpInside 对应的方法来处理UISlider滑动过程中的问题
      * 参考学习网址：
      * https://developer.apple.com/documentation/uikit/uicontrolevents?language=objc
      *
