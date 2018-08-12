@@ -75,7 +75,7 @@ static long long const kDisplacementBase = 0x01;   //!< 偏移基数
     if (screenH == 812.0 && screenW == 375.0) {
         screenH -= 122.0;
     }else {
-        screenH -= 44.0;
+        screenH -= 64.0;
     }
     CGFloat btnTopMargin = 20.0;
     CGFloat btnW = [UIScreen mainScreen].bounds.size.width;
